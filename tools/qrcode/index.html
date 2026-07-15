@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Offline QR — 0xPrivacy</title>
+<link rel="stylesheet" href="../../assets/css/shell.css"/>
+<script src="../../assets/js/shell.js" defer></script>
+<script src="../../assets/js/lib/qrcode.js"></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="../../index.html">0x<span>Privacy</span> Tools</a>
+  <span class="offline-pill">offline</span>
+  <nav><a href="../../index.html">hub</a><button class="btn" data-theme-toggle>theme</button></nav>
+</header>
+<main>
+  <h1>Offline QR Generator</h1>
+  <p class="muted">Renders QR codes entirely in your browser using a vendored library. No network, works offline.</p>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Mode</label>
+        <select id="mode">
+          <option value="text">Text / URL</option>
+          <option value="btc">Bitcoin (BIP21)</option>
+          <option value="xmr">Monero</option>
+          <option value="nostr">Nostr npub</option>
+          <option value="wifi">Wi-Fi</option>
+        </select>
+      </div>
+      <div><label>Error correction</label>
+        <select id="ecc"><option value="L">L</option><option value="M" selected>M</option><option value="Q">Q</option><option value="H">H</option></select>
+      </div>
+    </div>
+
+    <div id="fields"></div>
+    <button class="btn primary" style="margin-top:10px" onclick="render()">Generate</button>
+    <div class="copy" style="margin-top:12px"><div class="output" id="payload" style="white-space:pre-wrap">—</div><button class="btn copybtn" onclick="cp('payload')">copy</button></div>
+    <div id="qr" style="margin-top:14px;display:flex;justify-content:center"></div>
+    <button class="btn" onclick="dl()" style="margin-top:8px">Download PNG</button>
+  </div>
+</main>
+<footer>0xPrivacy · <a class="link" href="../../index.html">all tools</a></footer>
+<script>
+const $ = id => document.getElementById(id);
+window.cp = id => navigator.clipboard?.writeText($(id).textContent);
+const FIELDS = {
+  text: [['data','Text or URL','https://0xprivacy.org']],
+  btc:  [['addr','BTC address','bc1q…'],['amt','Amount (BTC, optional)',''],['msg','Message (optional)','']],
+  xmr:  [['addr','XMR address','4…'],['amt','Amount (XMR, optional)',''],['desc','Description (optional)','']],
+  nostr:[['npub','npub…','npub1…']],
+  wifi: [['ssid','SSID','MyNetwork'],['pass','Password',''],['enc','Encryption','WPA/WPA2/WEP']]
+};
+function drawFields(){
+  const m = $('mode').value;
+  $('fields').innerHTML = FIELDS[m].map(([id,lab,ph])=>`<label>${lab}</label><input id="f_${id}" placeholder="${ph}"/>`).join('');
+}
+$('mode').addEventListener('change', drawFields); drawFields();
+
+function build(){
+  const m = $('mode').value, g = id => $(`f_${id}`).value;
+  if(m==='text') return g('data');
+  if(m==='btc'){ let u=`bitcoin:${g('addr')}`; const p=[]; if(g('amt'))p.push('amount='+g('amt')); if(g('msg'))p.push('message='+encodeURIComponent(g('msg'))); return u+(p.length?('?'+p.join('&')):''); }
+  if(m==='xmr'){ let u=`monero:${g('addr')}`; const p=[]; if(g('amt'))p.push('tx_amount='+g('amt')); if(g('desc'))p.push('tx_description='+encodeURIComponent(g('desc'))); return u+(p.length?('?'+p.join('&')):''); }
+  if(m==='nostr') return g('npub');
+  if(m==='wifi') return `WIFI:T:${g('enc')};S:${g('ssid')};P:${g('pass')};;`;
+  return '';
+}
+function render(){
+  const payload = build();
+  $('payload').textContent = payload || '(empty)';
+  try{
+    const qr = qrcode(0, $('ecc').value);
+    qr.addData(payload);
+    qr.make();
+    $('qr').innerHTML = qr.createImgTag(6, 12);
+  }catch(e){ $('qr').innerHTML = '<p class="muted">too long for QR: '+e.message+'</p>'; }
+}
+function dl(){
+  const img = $('qr').querySelector('img');
+  if(!img) return;
+  const a = document.createElement('a'); a.href = img.src; a.download = '0xprivacy-qr.png'; a.click();
+}
+window.render=render; window.dl=dl;
+</script>
+</body>
+</html>

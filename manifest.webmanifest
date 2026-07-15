@@ -1,0 +1,13 @@
+{
+  "name": "0xPrivacy Tools",
+  "short_name": "0xTools",
+  "description": "Privacy-first, client-side tools. No accounts, no tracking, open source.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {"src": "./assets/img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}

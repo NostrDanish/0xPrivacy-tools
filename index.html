@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#0d1117"/>
+<title>0xPrivacy Tools — privacy Swiss Army knife</title>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<link rel="icon" href="./assets/img/icon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="./assets/css/shell.css"/>
+<script src="./assets/js/shell.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">0x<span>Privacy</span> Tools</a>
+  <span class="offline-pill">offline</span>
+  <nav>
+    <a href="./tools/password/index.html">Password</a>
+    <a href="./tools/hash/index.html">Hash</a>
+    <a href="./tools/converters/index.html">Convert</a>
+    <a href="./tools/devutils/index.html">Dev</a>
+    <a href="./tools/qrcode/index.html">QR</a>
+    <a href="./tools/metadata/index.html">Meta</a>
+    <button class="btn" data-theme-toggle>theme</button>
+  </nav>
+</header>
+<main>
+  <h1>Privacy, one tool at a time.</h1>
+  <p class="muted">Every tool runs <b>client-side</b> in your browser. No servers, no accounts, no tracking.
+  Install the PWA and use everything offline after the first visit. Open source under MIT.</p>
+  <input id="q" placeholder="Search tools… (password, hash, bech32, qr…)" style="margin:14px 0"/>
+  <div class="grid" id="grid"></div>
+  <div class="note">All cryptography uses the browser's native WebCrypto + audited <code>@noble/hashes</code>.
+  Nothing you type or upload leaves your device.</div>
+</main>
+<footer>
+  0xPrivacy · privacy is a human right · <a class="link" href="https://github.com/NostrDanish/0xPrivacy-tools">source</a>
+</footer>
+<script>
+const TOOLS = [
+  {t:'Password & Passphrase', d:'Diceware + strong random passwords.', u:'./tools/password/index.html', k:'password diceware passphrase entropy'},
+  {t:'Hash Calculator', d:'SHA-256, BLAKE3, MD5 in-browser.', u:'./tools/hash/index.html', k:'hash sha256 blake3 md5 checksum'},
+  {t:'Converters', d:'Base64, URL, bech32, npub↔hex.', u:'./tools/converters/index.html', k:'base64 url bech32 npub hex nostr convert'},
+  {t:'Dev Utils', d:'JSON format, Unix time, UUID.', u:'./tools/devutils/index.html', k:'json format unix timestamp uuid developer'},
+  {t:'Offline QR', d:'BTC, XMR, Nostr, Wi-Fi QR codes.', u:'./tools/qrcode/index.html', k:'qr qrcode bitcoin monero nostr wifi offline'},
+  {t:'Metadata Cleaner', d:'Strip EXIF / metadata from files.', u:'./tools/metadata/index.html', k:'metadata exif strip image pdf privacy'}
+];
+const grid = document.getElementById('grid'), q = document.getElementById('q');
+function render(list){
+  grid.innerHTML = list.map(x=>`<a class="toolcard" href="${x.u}"><div class="t">${x.t}</div><div class="d">${x.d}</div></a>`).join('') || '<p class="muted">No tools match.</p>';
+}
+render(TOOLS);
+q.addEventListener('input', ()=>{
+  const s = q.value.toLowerCase();
+  render(TOOLS.filter(x=>!s || (x.t+x.d+x.k).toLowerCase().includes(s)));
+});
+</script>
+</body>
+</html>

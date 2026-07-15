@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Converters — 0xPrivacy</title>
+<link rel="stylesheet" href="../../assets/css/shell.css"/>
+<script src="../../assets/js/shell.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="../../index.html">0x<span>Privacy</span> Tools</a>
+  <span class="offline-pill">offline</span>
+  <nav><a href="../../index.html">hub</a><button class="btn" data-theme-toggle>theme</button></nav>
+</header>
+<main>
+  <h1>Converters</h1>
+  <p class="muted">Base64, URL, bech32 and Nostr npub↔hex — all client-side.</p>
+
+  <div class="card">
+    <h2>Base64</h2>
+    <textarea id="b64in" placeholder="text or base64…"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" onclick="b64('enc')">Encode →</button>
+      <button class="btn" onclick="b64('dec')">← Decode</button>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="b64out">—</div><button class="btn copybtn" onclick="cp('b64out')">copy</button></div>
+  </div>
+
+  <div class="card">
+    <h2>URL encode / decode</h2>
+    <textarea id="urlin" placeholder="string…"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" onclick="url('enc')">Encode</button>
+      <button class="btn" onclick="url('dec')">Decode</button>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="urlout">—</div><button class="btn copybtn" onclick="cp('urlout')">copy</button></div>
+  </div>
+
+  <div class="card">
+    <h2>bech32 / npub ↔ hex</h2>
+    <input id="bech" placeholder="npub1… or hex…"/>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" onclick="bechToHex()">bech32 → hex</button>
+      <button class="btn" onclick="hexToNpub()">hex → npub</button>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="bechout">—</div><button class="btn copybtn" onclick="cp('bechout')">copy</button></div>
+    <div class="note">npub/nsec use bech32 with HRP <code>npub</code>/<code>nsec</code>. Hex is the raw 32-byte key.</div>
+  </div>
+</main>
+<footer>0xPrivacy · <a class="link" href="../../index.html">all tools</a></footer>
+<script type="module">
+import { encode, decode, wordsToHex, hexToWords } from '../../assets/js/lib/bech32.js';
+const $ = id => document.getElementById(id);
+window.cp = id => navigator.clipboard?.writeText($(id).textContent);
+
+function b64(dir){
+  const v = $('b64in').value;
+  try{
+    $('b64out').textContent = dir==='enc'
+      ? btoa(unescape(encodeURIComponent(v)))
+      : decodeURIComponent(escape(atob(v)));
+  }catch(e){ $('b64out').textContent = 'error: '+e.message; }
+}
+function url(dir){
+  const v = $('urlin').value;
+  try{ $('urlout').textContent = dir==='enc' ? encodeURIComponent(v) : decodeURIComponent(v); }
+  catch(e){ $('urlout').textContent = 'error: '+e.message; }
+}
+function bechToHex(){
+  try{ const d = decode($('bech').value); $('bechout').textContent = wordsToHex(d.words); }
+  catch(e){ $('bechout').textContent = 'invalid bech32: '+e.message; }
+}
+function hexToNpub(){
+  let h = $('bech').value.trim().replace(/^0x/,'');
+  try{ $('bechout').textContent = encode('npub', hexToWords(h)); }
+  catch(e){ $('bechout').textContent = 'invalid hex: '+e.message; }
+}
+window.b64=b64; window.url=url; window.bechToHex=bechToHex; window.hexToNpub=hexToNpub;
+</script>
+</body>
+</html>

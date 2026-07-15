@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dev Utils — 0xPrivacy</title>
+<link rel="stylesheet" href="../../assets/css/shell.css"/>
+<script src="../../assets/js/shell.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="../../index.html">0x<span>Privacy</span> Tools</a>
+  <span class="offline-pill">offline</span>
+  <nav><a href="../../index.html">hub</a><button class="btn" data-theme-toggle>theme</button></nav>
+</header>
+<main>
+  <h1>Developer Utilities</h1>
+  <p class="muted">JSON formatter, Unix timestamp converter, UUID generator. No network.</p>
+
+  <div class="card">
+    <h2>JSON Formatter / Validator</h2>
+    <textarea id="json" placeholder='{"a":1,"b":[2,3]}'></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" onclick="fmt()">Format</button>
+      <button class="btn" onclick="min()">Minify</button>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="jsonout">—</div><button class="btn copybtn" onclick="cp('jsonout')">copy</button></div>
+  </div>
+
+  <div class="card">
+    <h2>Unix Timestamp</h2>
+    <div class="row">
+      <div><label>Unix (s)</label><input id="ts" type="number" placeholder="1700000000"/></div>
+      <div><label>&nbsp;</label><button class="btn" onclick="tsToDate()">→ Date</button></div>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="tsout">—</div><button class="btn copybtn" onclick="cp('tsout')">copy</button></div>
+    <p class="muted" id="now"></p>
+    <button class="btn" onclick="nowTs()">Use current time</button>
+  </div>
+
+  <div class="card">
+    <h2>UUID v4</h2>
+    <div class="row">
+      <div><label>Count</label><input id="uc" type="number" min="1" max="50" value="1"/></div>
+      <div><label>&nbsp;</label><button class="btn primary" onclick="genU()">Generate</button></div>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="uout">—</div><button class="btn copybtn" onclick="cp('uout')">copy</button></div>
+  </div>
+</main>
+<footer>0xPrivacy · <a class="link" href="../../index.html">all tools</a></footer>
+<script>
+const $ = id => document.getElementById(id);
+window.cp = id => navigator.clipboard?.writeText($(id).textContent);
+function fmt(){ try{ $('jsonout').textContent = JSON.stringify(JSON.parse($('json').value), null, 2); }catch(e){ $('jsonout').textContent='invalid JSON: '+e.message; } }
+function min(){ try{ $('jsonout').textContent = JSON.stringify(JSON.parse($('json').value)); }catch(e){ $('jsonout').textContent='invalid JSON: '+e.message; } }
+function tsToDate(){ const t=+$('ts').value; if(!t){$('tsout').textContent='enter a value';return;} $('tsout').textContent = new Date(t*1000).toUTCString()+'  /  '+new Date(t*1000).toLocaleString(); }
+function nowTs(){ const s=Math.floor(Date.now()/1000); $('ts').value=s; tsToDate(); }
+function genU(){ const n=Math.max(1,Math.min(50,+$('uc').value||1)); let o=[]; for(let i=0;i<n;i++) o.push(crypto.randomUUID()); $('uout').textContent=o.join('\n'); }
+window.fmt=fmt; window.min=min; window.tsToDate=tsToDate; window.nowTs=nowTs; window.genU=genU;
+$('now').textContent = 'now: '+Math.floor(Date.now()/1000);
+</script>
+</body>
+</html>
