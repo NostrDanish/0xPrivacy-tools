@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AnonSign: Prove Key Ownership Without Exposure</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:monospace;background:#0d1117;color:#c9d1d9;margin:0;padding:1rem}input,button{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:.5rem;margin:.25rem}pre{white-space:pre-wrap}</style>
+</head>
+<body>
+<h1>AnonSign</h1>
+<p>Prove you control a private key for a known public key without revealing the key or signing a追踪 message.</p>
+<input id="pubkey" type="text" placeholder="npub1... or hex x-only pubkey" size="40">
+<button onclick="proveOwnership()">Prove ownership</button>
+<pre id="out"></pre>
+
+<script type="module">
+// Demo: in production this calls a Schnorr ZK proof (e.g. a PoK of discrete log)
+// using @noble/curves or a WASM schnorr gadget. No server involved.
+window.proveOwnership = async () => {
+  const pk = document.getElementById('pubkey').value.trim();
+  const out = document.getElementById('out');
+  if(!pk){ out.textContent = 'Enter a public key.'; return; }
+  const challenge = crypto.randomUUID();
+  const nullifier = btoa(pk).slice(0,16).replace(/=/g,'');
+  const proof = {
+    statement: 'I know the secret key for ' + pk.slice(0,12) + '...',
+    challenge,
+    nullifier,
+    ts: Date.now()
+  };
+  out.textContent = 'Zero-knowledge ownership proof (simulation):\n' +
+    btoa(JSON.stringify(proof)).slice(0,80) + '...';
+};
+</script>
+</body>
+</html>
