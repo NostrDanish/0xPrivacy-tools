@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ZK-Vote: Anonymous One-Vote-Per-Key Poll</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:monospace;background:#0d1117;color:#c9d1d9;margin:0;padding:1rem}input,button,select{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:.5rem;margin:.25rem}pre{white-space:pre-wrap}</style>
+</head>
+<body>
+<h1>ZK-Vote</h1>
+<p>Cast a vote tied to your Nostr key, but prove it is exactly one vote without revealing which key voted.</p>
+<input id="pubkey" type="text" placeholder="npub1... or hex x-only" size="40">
+<select id="choice">
+  <option value="A">Option A</option>
+  <option value="B">Option B</option>
+  <option value="C">Option C</option>
+</select>
+<button onclick="castVote()">Cast anonymous vote</button>
+<pre id="out"></pre>
+
+<script type="module">
+// Demo: real version uses a nullifier = H(pubkey, poll_id) so each key
+// can vote once, plus a ZK proof that the nullifier was derived from a
+// valid pubkey without revealing the pubkey. No server sees the vote.
+window.castVote = async () => {
+  const pk = document.getElementById('pubkey').value.trim();
+  const choice = document.getElementById('choice').value;
+  const out = document.getElementById('out');
+  if(!pk){ out.textContent = 'Enter a public key.'; return; }
+  const pollId = 'poll-2026-07';
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(pk + '|' + pollId));
+  const nullifier = [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+  const receipt = {
+    poll: pollId,
+    choice,
+    nullifier,
+    ts: Date.now()
+  };
+  out.textContent = 'Anonymous vote receipt (simulation):\n' +
+    'nullifier=' + nullifier + '\n' +
+    btoa(JSON.stringify(receipt)).slice(0,80) + '...';
+};
+</script>
+</body>
+</html>

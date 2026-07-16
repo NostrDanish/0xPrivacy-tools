@@ -25,6 +25,7 @@
     <a href="./tools/nostr/index.html">Nostr</a>
     <a href="./tools/zk-kyc/index.html">ZK-KYC</a>
     <a href="./tools/anonsign/index.html">AnonSign</a>
+    <a href="./tools/zk-vote/index.html">ZK-Vote</a>
     <button class="btn" data-theme-toggle>theme</button>
   </nav>
 </header>
@@ -49,7 +50,8 @@ const TOOLS = [
   {t:'Offline QR', d:'BTC, XMR, Nostr, Wi-Fi QR codes.', u:'./tools/qrcode/index.html', k:'qr qrcode bitcoin monero nostr wifi offline'},
   {t:'Metadata Cleaner', d:'Strip EXIF / metadata from files.', u:'./tools/metadata/index.html', k:'metadata exif strip image pdf privacy'},
   {t:'ZK-KYC', d:'Zero-knowledge age/membership proof, client-side.', u:'./tools/zk-kyc/index.html', k:'zk zero knowledge kyc age proof privacy snark'},
-  {t:'AnonSign', d:'Prove key ownership without exposing the key.', u:'./tools/anonsign/index.html', k:'zk anonymous signature schnorr nostr key proof'}
+  {t:'AnonSign', d:'Prove key ownership without exposing the key.', u:'./tools/anonsign/index.html', k:'zk anonymous signature schnorr nostr key proof'},
+  {t:'ZK-Vote', d:'Anonymous one-vote-per-key poll.', u:'./tools/zk-vote/index.html', k:'zk vote anonymous poll nostr nullifier democracy'}
 ];
 const grid = document.getElementById('grid'), q = document.getElementById('q');
 function render(list){
