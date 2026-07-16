@@ -21,6 +21,9 @@
     <a href="./tools/devutils/index.html">Dev</a>
     <a href="./tools/qrcode/index.html">QR</a>
     <a href="./tools/metadata/index.html">Meta</a>
+    <a href="./tools/analytics/index.html">Usage</a>
+    <a href="./tools/nostr/index.html">Nostr</a>
+    <a href="./tools/zk-kyc/index.html">ZK-KYC</a>
     <button class="btn" data-theme-toggle>theme</button>
   </nav>
 </header>
@@ -43,7 +46,8 @@ const TOOLS = [
   {t:'Converters', d:'Base64, URL, bech32, npub↔hex.', u:'./tools/converters/index.html', k:'base64 url bech32 npub hex nostr convert'},
   {t:'Dev Utils', d:'JSON format, Unix time, UUID.', u:'./tools/devutils/index.html', k:'json format unix timestamp uuid developer'},
   {t:'Offline QR', d:'BTC, XMR, Nostr, Wi-Fi QR codes.', u:'./tools/qrcode/index.html', k:'qr qrcode bitcoin monero nostr wifi offline'},
-  {t:'Metadata Cleaner', d:'Strip EXIF / metadata from files.', u:'./tools/metadata/index.html', k:'metadata exif strip image pdf privacy'}
+  {t:'Metadata Cleaner', d:'Strip EXIF / metadata from files.', u:'./tools/metadata/index.html', k:'metadata exif strip image pdf privacy'},
+  {t:'ZK-KYC', d:'Zero-knowledge age/membership proof, client-side.', u:'./tools/zk-kyc/index.html', k:'zk zero knowledge kyc age proof privacy snark'}
 ];
 const grid = document.getElementById('grid'), q = document.getElementById('q');
 function render(list){

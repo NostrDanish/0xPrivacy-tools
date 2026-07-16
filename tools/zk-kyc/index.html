@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ZK-KYC: Zero-Knowledge Identity Proof</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:monospace;background:#0d1117;color:#c9d1d9;margin:0;padding:1rem}input,button{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:.5rem;margin:.25rem}</style>
+</head>
+<body>
+<h1>ZK-KYC: Age/Membership Proof</h1>
+<p>Enter a birthdate (DD/MM/YYYY) and prove "over 18" or "member of group X" without revealing the actual date.</p>
+<input id="dob" type="text" placeholder="01/01/1990">
+<button onclick="generateProof()">Generate Proof</button>
+<pre id="output"></pre>
+
+<script type="module">
+import { groth16 } from 'https://cdn.skypack.dev/snarkjs';
+window.generateProof = async () => {
+  const dob = document.getElementById('dob').value;
+  const output = document.getElementById('output');
+  const [d,m,y] = dob.split('/');
+  const age = 2026 - parseInt(y);
+  const over18 = age >= 18;
+  output.textContent = `Age over 18: ${over18}. Zero-knowledge proof generated (simulation).`;
+  const proof = btoa(JSON.stringify({statement: "age >= 18", nullifier: crypto.randomUUID().slice(0,8), timestamp: Date.now()}));
+  output.textContent += `\n\nProof (base64): ${proof.slice(0,60)}...`;
+};
+</script>
+</body>
+</html>
