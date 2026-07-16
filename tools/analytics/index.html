@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Local Usage — 0xPrivacy</title>
+<link rel="stylesheet" href="../../assets/css/shell.css"/>
+<script src="../../assets/js/shell.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="../../index.html">0x<span>Privacy</span> Tools</a>
+  <span class="offline-pill">offline</span>
+  <nav><button class="btn" data-theme-toggle>theme</button></nav>
+</header>
+<main>
+  <h1>Your Local Tool Usage</h1>
+  <p class="muted">Counts are stored only in <b>this browser</b> (localStorage). Nothing is sent anywhere.
+  Export the JSON and DM it to <b>0xDevBot</b> if you want to help prioritize tools — fully optional.</p>
+
+  <div class="card">
+    <h3>Most-used tools</h3>
+    <ol id="rank"></ol>
+    <p class="muted" id="empty" style="display:none">No usage recorded yet. Open a few tools first.</p>
+  </div>
+
+  <div class="card">
+    <h3>Share with 0xDevBot (opt-in)</h3>
+    <p class="muted">Tap export, then DM the file or pasted JSON to 0xDevBot. Prefix your message with <code>idea:</code> if it's a request, or just send usage.</p>
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn primary" id="export">Download JSON</button>
+      <button class="btn" id="copy">Copy JSON</button>
+      <button class="btn" id="clear">Clear local data</button>
+    </div>
+    <pre id="out" style="white-space:pre-wrap;word-break:break-all;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;font-size:.78rem"></pre>
+  </div>
+</main>
+<script>
+(function(){
+  function render(){
+    const d = (window['0xP'] && window['0xP'].usage()) || {};
+    const entries = Object.entries(d).filter(([k])=>k!=='_last')
+                         .sort((a,b)=>b[1]-a[1]);
+    const rank = document.getElementById('rank');
+    const empty = document.getElementById('empty');
+    rank.innerHTML = '';
+    if(!entries.length){ empty.style.display='block'; return; }
+    empty.style.display='none';
+    for(const [k,v] of entries){
+      const li = document.createElement('li');
+      li.textContent = k + ' — ' + v + ' open' + (v===1?'':'s');
+      rank.appendChild(li);
+    }
+  }
+  function payload(){
+    const d = (window['0xP'] && window['0xP'].usage()) || {};
+    return {
+      app:'0xPrivacy-tools',
+      exported_at: Math.floor(Date.now()/1000),
+      note:'Opt-in local usage. DM to 0xDevBot to help prioritize tools. No PII.',
+      usage: Object.fromEntries(Object.entries(d).filter(([k])=>k!=='_last'))
+    };
+  }
+  document.getElementById('export').onclick = ()=> window['0xP'].exportUsage();
+  document.getElementById('copy').onclick = async ()=>{
+    const txt = JSON.stringify(payload(), null, 2);
+    try{ await navigator.clipboard.writeText(txt); }catch(e){}
+    document.getElementById('out').textContent = txt;
+  };
+  document.getElementById('clear').onclick = ()=>{
+    try{ localStorage.removeItem('0xp-usage'); }catch(e){}
+    render(); document.getElementById('out').textContent='';
+  };
+  if(document.readyState!=='loading') render();
+  else document.addEventListener('DOMContentLoaded', render);
+})();
+</script>
+</body>
+</html>

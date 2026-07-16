@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Nostr Toolkit — 0xPrivacy</title>
+<link rel="stylesheet" href="../../assets/css/shell.css"/>
+<script src="../../assets/js/shell.js" defer></script>
+<script type="module">
+import { decode, encode, wordsToHex, hexToWords } from '../../assets/js/lib/bech32.js';
+
+const $ = id => document.getElementById(id);
+function cp(id){ const t=$(id).textContent; if(t&&t!=='—'){ navigator.clipboard.writeText(t).catch(()=>{}); } }
+
+// npub/nsec/note1 -> hex
+function toHex(){
+  const v=$('bech').value.trim();
+  if(!v){ $('bechOut').textContent='—'; return; }
+  try{
+    const {hrp, words} = decode(v);
+    const hex = wordsToHex(words);
+    $('bechOut').textContent = hrp + ' -> ' + hex;
+    $('bechOut').dataset.hex = hex;
+  }catch(e){ $('bechOut').textContent = '✗ invalid bech32: '+e.message; }
+}
+// hex -> chosen hrp
+function toBech(){
+  const v=$('hexin').value.trim().replace(/^0x/,'');
+  const hrp=$('hrp').value;
+  if(!/^[0-9a-fA-F]{64}$/.test(v)){ $('hexOut').textContent='✗ need 32-byte hex (64 chars)'; return; }
+  try{
+    const words = hexToWords(v);
+    $('hexOut').textContent = encode(hrp, words, 'bech32');
+  }catch(e){ $('hexOut').textContent='✗ '+e.message; }
+}
+
+// decode a raw Nostr event JSON
+function decodeEvent(){
+  const raw=$('evt').value.trim();
+  if(!raw){ $('evtOut').textContent='—'; return; }
+  try{
+    const ev = JSON.parse(raw);
+    const lines = [];
+    lines.push('id:        '+(ev.id||'(none)'));
+    lines.push('pubkey:    '+(ev.pubkey||'(none)'));
+    lines.push('created_at:'+(ev.created_at ? new Date(ev.created_at*1000).toISOString() : '(none)'));
+    lines.push('kind:      '+(ev.kind ?? '(none)')+'  '+kindName(ev.kind));
+    lines.push('tags:      '+(ev.tags?ev.tags.length:0)+' tag(s)');
+    if(Array.isArray(ev.tags)){
+      for(const t of ev.tags){
+        if(t[0]==='p') lines.push('  p -> '+t[1]);
+        if(t[0]==='e') lines.push('  e -> '+t[1]);
+      }
+    }
+    lines.push('sig:       '+(ev.sig ? ev.sig.slice(0,16)+'…' : '(none)'));
+    lines.push('content:   '+(ev.content||'').slice(0,120)+(ev.content&&ev.content.length>120?'…':''));
+    $('evtOut').textContent = lines.join('\n');
+  }catch(e){ $('evtOut').textContent='✗ not valid JSON: '+e.message; }
+}
+
+function kindName(k){
+  const m={0:'note',1:'short text',3:'contacts',4:'DM (NIP-04)',5:'deletion',6:'repost',
+    7:'reaction',8:'badge award',16:'reaction',1063:'HTTP auth (NIP-98)',
+    1059:'gift wrap (NIP-17)',13:'seal (NIP-59)',14:'rumor (NIP-59)',
+    9734:'zap request',9735:'zap receipt',10002:'relay list',30023:'long-form (NIP-23)',
+    10003:'bookmarks',22242:'NWC'};
+  return m[k]||'';
+}
+
+window.toHex=toHex; window.toBech=toBech; window.decodeEvent=decodeEvent; window.cp=cp;
+</script>
+</head>
+<body>
+<header>
+  <a class="brand" href="../../index.html">0x<span>Privacy</span> Tools</a>
+  <span class="offline-pill">offline</span>
+  <nav><button class="btn" data-theme-toggle>theme</button></nav>
+</header>
+<main>
+  <h1>Nostr Toolkit</h1>
+  <p class="muted">Inspect and convert Nostr identifiers — all client-side, no relay, no tracking.</p>
+
+  <div class="card">
+    <h2>bech32 → hex</h2>
+    <textarea id="bech" placeholder="npub… / nsec… / note1…"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" onclick="toHex()">Decode</button></div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="bechOut">—</div><button class="btn copybtn" onclick="cp('bechOut')">copy</button></div>
+  </div>
+
+  <div class="card">
+    <h2>hex → bech32</h2>
+    <textarea id="hexin" placeholder="64-char hex pubkey / privkey / event id"></textarea>
+    <div class="row" style="margin-top:8px">
+      <select id="hrp">
+        <option value="npub">npub (pubkey)</option>
+        <option value="nsec">nsec (privkey)</option>
+        <option value="note">note1 (event id)</option>
+      </select>
+      <button class="btn" onclick="toBech()">Encode</button>
+    </div>
+    <div class="copy" style="margin-top:8px"><div class="output" id="hexOut">—</div><button class="btn copybtn" onclick="cp('hexOut')">copy</button></div>
+  </div>
+
+  <div class="card">
+    <h2>Event decoder</h2>
+    <textarea id="evt" placeholder='{"id":"…","pubkey":"…","created_at":…,"kind":1,"tags":[["p","…"]],"content":"…","sig":"…"}'></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" onclick="decodeEvent()">Decode</button></div>
+    <pre id="evtOut" class="output" style="white-space:pre-wrap;word-break:break-all;margin-top:8px">—</pre>
+  </div>
+
+  <div class="card">
+    <h2>Common NIPs</h2>
+    <ul class="muted">
+      <li><b>NIP-01</b> — events, tags, signatures</li>
+      <li><b>NIP-04</b> — encrypted DMs (deprecated by 17)</li>
+      <li><b>NIP-05</b> — DNS-based internet identifiers</li>
+      <li><b>NIP-17</b> — gift-wrapped DMs (private, metadata-resistant)</li>
+      <li><b>NIP-19</b> — bech32 identifiers (npub/nsec/note1)</li>
+      <li><b>NIP-23</b> — long-form content (kind 30023)</li>
+      <li><b>NIP-44</b> — v2 encryption (used by NIP-17)</li>
+      <li><b>NIP-57</b> — zaps (Lightning tips)</li>
+      <li><b>NIP-98</b> — HTTP auth</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

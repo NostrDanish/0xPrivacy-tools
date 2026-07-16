@@ -1,0 +1,17 @@
+# Minimal torrc for Zero Flare
+# Run inside the tor container (docker-compose mounts this)
+
+SocksPort 9150
+ControlPort 9040
+Log notice stdout
+DataDirectory /data
+ControlledAccessCoinValidation 0
+PublishServerDescriptor 0
+PublishClientDescriptor 0
+
+# Enable Snowflake bridge automatically if available
+# (Snowflake container provides the bridge, not this torrc)
+
+# Do not act as a relay
+ExitRelay 0
+BridgeRelay 0

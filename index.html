@@ -9,6 +9,12 @@
 <link rel="icon" href="./assets/img/icon.svg" type="image/svg+xml"/>
 <link rel="stylesheet" href="./assets/css/shell.css"/>
 <script src="./assets/js/shell.js" defer></script>
+<style>
+.hero{position:relative;text-align:center;padding:48px 20px 32px;overflow:hidden}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,255,159,.12),transparent 60%);pointer-events:none}
+.hero-mark{width:72px;height:72px;filter:drop-shadow(0 0 16px rgba(0,255,159,.5));margin-bottom:8px}
+.hero h1{font-size:2rem;margin:.1em 0 .3em;background:linear-gradient(90deg,#00ff9f,#00ffff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+</style>
 </head>
 <body>
 <header>
@@ -33,9 +39,17 @@
   </nav>
 </header>
 <main>
-  <h1>Privacy, one tool at a time.</h1>
-  <p class="muted">Every tool runs <b>client-side</b> in your browser. No servers, no accounts, no tracking.
-  Install the PWA and use everything offline after the first visit. Open source under MIT.</p>
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <svg class="hero-mark" viewBox="0 0 64 64" aria-hidden="true">
+      <rect width="64" height="64" rx="12" fill="#000"/>
+      <path d="M12 28c0-4.4 3.6-8 8-8h4v4h-4c-2.2 0-4 1.8-4 4v8c0 2.2 1.8 4 4 4h4v4h-4c-4.4 0-8-3.6-8-8v-8z" fill="#00ff9f"/>
+      <path d="M52 36c0 4.4-3.6 8-8 8h-4v-4h4c2.2 0 4-1.8 4-4v-8c0-2.2-1.8-4-4-4h-4v-4h4c4.4 0 8 3.6 8 8v8z" fill="#00ffff"/>
+      <line x1="28" y1="26" x2="36" y2="38" stroke="#00ff9f" stroke-width="2" stroke-dasharray="3 2"/>
+    </svg>
+    <h1>Break the Digital Cage.</h1>
+    <p class="muted">0xPrivacy Tools is a privacy Swiss Army knife. Every tool runs <b>client-side</b> — no servers, no accounts, no tracking. Install the PWA and keep using everything offline. Open source under MIT.</p>
+  </section>
   <input id="q" placeholder="Search tools… (password, hash, bech32, qr…)" style="margin:14px 0"/>
   <div class="grid" id="grid"></div>
   <div class="note">All cryptography uses the browser's native WebCrypto + audited <code>@noble/hashes</code>.
