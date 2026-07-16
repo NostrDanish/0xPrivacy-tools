@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ZK-Attest: Bind NIP-05 to a Claim Without Doxxing</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:monospace;background:#0d1117;color:#c9d1d9;margin:0;padding:1rem}input,button{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:.5rem;margin:.25rem;width:90%}pre{white-space:pre-wrap}</style>
+</head>
+<body>
+<h1>ZK-Attest</h1>
+<p>Prove your NIP-05 identity backs a claim (e.g. "I am a verified relay operator") without revealing the NIP-05 handle.</p>
+<input id="nip05" type="text" placeholder="user@domain.net" value="">
+<input id="claim" type="text" placeholder="claim string, e.g. relay-operator" value="">
+<button onclick="attest()">Generate ZK attestation</button>
+<pre id="out"></pre>
+
+<script type="module">
+// Demo: real version fetches the NIP-05 -> pubkey mapping, signs the claim,
+// then produces a ZK proof that a valid signature exists for (pubkey, claim)
+// without revealing pubkey or handle. Verifier checks proof + claim only.
+window.attest = async () => {
+  const nip05 = document.getElementById('nip05').value.trim();
+  const claim = document.getElementById('claim').value.trim();
+  const out = document.getElementById('out');
+  if(!nip05 || !claim){ out.textContent = 'Enter NIP-05 and a claim.'; return; }
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(nip05 + '|' + claim));
+  const nullifier = [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+  const receipt = { claim, nullifier, ts: Date.now() };
+  out.textContent = 'ZK attestation (simulation):\nclaim=' + claim +
+    '\nnullifier=' + nullifier + '\n' + btoa(JSON.stringify(receipt)).slice(0,80) + '...';
+};
+</script>
+</body>
+</html>

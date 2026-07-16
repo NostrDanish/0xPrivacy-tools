@@ -27,6 +27,7 @@
     <a href="./tools/anonsign/index.html">AnonSign</a>
     <a href="./tools/zk-vote/index.html">ZK-Vote</a>
     <a href="./tools/zk-cashu/index.html">ZK-Cashu</a>
+    <a href="./tools/zk-attest/index.html">ZK-Attest</a>
     <button class="btn" data-theme-toggle>theme</button>
   </nav>
 </header>
@@ -53,7 +54,8 @@ const TOOLS = [
   {t:'ZK-KYC', d:'Zero-knowledge age/membership proof, client-side.', u:'./tools/zk-kyc/index.html', k:'zk zero knowledge kyc age proof privacy snark'},
   {t:'AnonSign', d:'Prove key ownership without exposing the key.', u:'./tools/anonsign/index.html', k:'zk anonymous signature schnorr nostr key proof'},
   {t:'ZK-Vote', d:'Anonymous one-vote-per-key poll.', u:'./tools/zk-vote/index.html', k:'zk vote anonymous poll nostr nullifier democracy'},
-  {t:'ZK-Cashu', d:'Private spend-proof linked to Cashu ecash.', u:'./tools/zk-cashu/index.html', k:'zk cashu ecash spend proof privacy mint nullifier'}
+  {t:'ZK-Cashu', d:'Private spend-proof linked to Cashu ecash.', u:'./tools/zk-cashu/index.html', k:'zk cashu ecash spend proof privacy mint nullifier'},
+  {t:'ZK-Attest', d:'Bind NIP-05 to a claim without doxxing.', u:'./tools/zk-attest/index.html', k:'zk attest nip05 claim identity privacy proof'}
 ];
 const grid = document.getElementById('grid'), q = document.getElementById('q');
 function render(list){
