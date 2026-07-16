@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ZK-Cashu: Private Spend-Proof Linked to Ecash</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:monospace;background:#0d1117;color:#c9d1d9;margin:0;padding:1rem}input,button,textarea{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:.5rem;margin:.25rem;width:90%}pre{white-space:pre-wrap}</style>
+</head>
+<body>
+<h1>ZK-Cashu</h1>
+<p>Prove you burned a Cashu ecash proof at a mint WITHOUT linking it to a specific admission event. Decouples spend from identity.</p>
+<textarea id="proof" rows="4" placeholder="Paste Cashu proof (NUT-00 base64)"></textarea>
+<input id="mint" type="text" placeholder="https://mint.example.com" value="https://mint.minibits.cash">
+<button onclick="linkSpend()">Generate ZK spend-proof</button>
+<pre id="out"></pre>
+
+<script type="module">
+// Demo: real version parses NUT-00 proof, derives a nullifier = H(C, mintPubKey)
+// and produces a ZK proof that the nullifier came from a valid spent token,
+// without revealing the token or the admission it paid for.
+window.linkSpend = async () => {
+  const proof = document.getElementById('proof').value.trim();
+  const mint = document.getElementById('mint').value.trim();
+  const out = document.getElementById('out');
+  if(!proof){ out.textContent = 'Paste a Cashu proof.'; return; }
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(proof + '|' + mint));
+  const nullifier = [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+  const receipt = { mint, nullifier, ts: Date.now() };
+  out.textContent = 'ZK spend-proof (simulation):\nnullifier=' + nullifier +
+    '\n' + btoa(JSON.stringify(receipt)).slice(0,80) + '...';
+};
+</script>
+</body>
+</html>

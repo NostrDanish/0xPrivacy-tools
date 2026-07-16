@@ -26,6 +26,7 @@
     <a href="./tools/zk-kyc/index.html">ZK-KYC</a>
     <a href="./tools/anonsign/index.html">AnonSign</a>
     <a href="./tools/zk-vote/index.html">ZK-Vote</a>
+    <a href="./tools/zk-cashu/index.html">ZK-Cashu</a>
     <button class="btn" data-theme-toggle>theme</button>
   </nav>
 </header>
@@ -51,7 +52,8 @@ const TOOLS = [
   {t:'Metadata Cleaner', d:'Strip EXIF / metadata from files.', u:'./tools/metadata/index.html', k:'metadata exif strip image pdf privacy'},
   {t:'ZK-KYC', d:'Zero-knowledge age/membership proof, client-side.', u:'./tools/zk-kyc/index.html', k:'zk zero knowledge kyc age proof privacy snark'},
   {t:'AnonSign', d:'Prove key ownership without exposing the key.', u:'./tools/anonsign/index.html', k:'zk anonymous signature schnorr nostr key proof'},
-  {t:'ZK-Vote', d:'Anonymous one-vote-per-key poll.', u:'./tools/zk-vote/index.html', k:'zk vote anonymous poll nostr nullifier democracy'}
+  {t:'ZK-Vote', d:'Anonymous one-vote-per-key poll.', u:'./tools/zk-vote/index.html', k:'zk vote anonymous poll nostr nullifier democracy'},
+  {t:'ZK-Cashu', d:'Private spend-proof linked to Cashu ecash.', u:'./tools/zk-cashu/index.html', k:'zk cashu ecash spend proof privacy mint nullifier'}
 ];
 const grid = document.getElementById('grid'), q = document.getElementById('q');
 function render(list){
